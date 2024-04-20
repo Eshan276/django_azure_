@@ -22,4 +22,4 @@ jobs:
           script: |
             cd backend_api
             git pull origin master
-            sudo systemctl restart your_django_service_name
+            sudo systemctl restart your_django_service_name 
