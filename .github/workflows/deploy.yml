@@ -2,7 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -11,16 +13,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Deploy to VM
+      - name: Install dependencies and migrate database
+        run: |
+          cd backend_api
+          pip install django gunicorn
+          python manage.py migrate
+
+      - name: List directory contents
+        run: ls
+
+      - name: Restart Gunicorn
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            ls
-            cd backend_api
-            git pull origin main  
-            pip install django gunicorn
-            python manage.py migrate
             sudo systemctl restart gunicorn
