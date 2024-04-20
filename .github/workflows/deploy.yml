@@ -22,11 +22,49 @@ jobs:
       - name: List directory contents
         run: ls
 
-      - name: Restart Gunicorn
+      - name: Configure Gunicorn service
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo systemctl restart gunicorn
+            sudo sh -c 'echo "[Unit]" > /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "Description=gunicorn daemon" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "After=network.target" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "[Service]" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "User=name_of_user" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "Group=name_of_user" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "WorkingDirectory=/home/name_of_user/myproject" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "ExecStart=/home/name_of_user/myproject/virtualenv_directory/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/name_of_user/myproject/myproject.sock myproject.wsgi:application" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "[Install]" >> /etc/systemd/system/gunicorn.service'
+            sudo sh -c 'echo "WantedBy=multi-user.target" >> /etc/systemd/system/gunicorn.service'
+
+      - name: Start Gunicorn service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo systemctl start gunicorn
+
+      - name: Enable Gunicorn service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo systemctl enable gunicorn
+
+      - name: Check Gunicorn service status
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo systemctl status gunicorn
