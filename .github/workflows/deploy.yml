@@ -19,5 +19,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd backend_api
-            git pull origin master
-            sudo systemctl restart your_django_service_name 
+            source venv/bin/activate
+            git pull origin main
+            pip install django gunicorn
+            python manage.py migrate
+            sudo systemctl restart gunicorn
