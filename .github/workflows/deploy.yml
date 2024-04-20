@@ -20,7 +20,7 @@ jobs:
           script: |
             cd backend_api
             source venv/bin/activate
-            git pull origin main
+            git pull origin main  
             pip install django gunicorn
             python manage.py migrate
             sudo systemctl restart gunicorn
