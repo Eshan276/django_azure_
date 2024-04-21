@@ -22,12 +22,12 @@ jobs:
       - name: List directory contents
         run: ls
 
-      - name: Start Django server
+      - name: Deploy to Azure VM
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            pkill -f "python manage.py runserver"
-            nohup python manage.py runserver 0.0.0.0:8000 > /dev/null 2>&1 &
+            sudo cp -r backend_api /var/www/
+            sudo systemctl restart backend_api
