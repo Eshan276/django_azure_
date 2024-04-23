@@ -1,4 +1,4 @@
-name: Deploy to Azure VM
+name: Deploy
 
 on:
   push:
@@ -13,21 +13,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Install dependencies and migrate database
+        run: |
+          cd backend_api
+          pip install django
+          python manage.py migrate
+
+      - name: List directory contents
+        run: ls
 
       - name: Deploy to Azure VM
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd backend_api
-            git pull origin main
-            pip install django
-            python manage.py collectstatic --no-input
-            python manage.py migrate
-            systemctl restart your-django-service
+  uses: appleboy/ssh-action@master
+  with:
+    host: ${{ secrets.HOST }}
+    username: ${{ secrets.USERNAME }}
+    key: ${{ secrets.SSH_PRIVATE_KEY }}
+    script: |
+      sudo cp -r backend_api etc\systemd\system
+      sudo systemctl restart backend_api.service
