@@ -29,5 +29,25 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo cp -r backend_api backend_api/backend_api
+            sudo cp -r backend_api backend_api/
             gunicorn backend_api.wsgi:application --bind 0.0.0.0:80
+
+# name: deploying changes
+# on:
+#   push:
+#     branches: [main]
+
+# jobs:
+#   build:
+#     name: Build
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: deploying changes
+#         uses: appleboy/ssh-action@master
+#         with:
+#           host: ${{ secrets.HOST }}
+#           username: ${{ secrets.USERNAME }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           script: |
+#             cd backend_api/
+#             sh deploy.sh
