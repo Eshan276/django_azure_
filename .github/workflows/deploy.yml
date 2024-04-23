@@ -29,5 +29,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo cp -r backend_api 
+            sudo cp -r backend_api/backend_api 
             gunicorn backend_api.wsgi:application --bind 0.0.0.0:8000
