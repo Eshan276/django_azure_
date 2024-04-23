@@ -23,11 +23,11 @@ jobs:
         run: ls
 
       - name: Deploy to Azure VM
-  uses: appleboy/ssh-action@master
-  with:
-    host: ${{ secrets.HOST }}
-    username: ${{ secrets.USERNAME }}
-    key: ${{ secrets.SSH_PRIVATE_KEY }}
-    script: |
-      sudo cp -r backend_api etc\systemd\system
-      sudo systemctl restart backend_api.service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo cp -r backend_api etc/systemd/system
+            sudo systemctl restart backend_api.service
