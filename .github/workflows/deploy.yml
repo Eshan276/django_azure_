@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies and migrate database
         run: |
           cd backend_api
-          pip install django
+          pip install django gunicorn
           python manage.py migrate
 
       - name: List directory contents
@@ -29,5 +29,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            sudo cp -r backend_api etc/systemd/system
-            sudo systemctl restart backend_api.service
+            sudo cp -r backend_api backend_api/backend_api
+            gunicorn backend_api.wsgi:application --bind 0.0.0.0:80
