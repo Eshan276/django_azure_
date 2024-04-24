@@ -1,2 +1,1 @@
-hi
-hello how are u
+deploying django to azure vm
